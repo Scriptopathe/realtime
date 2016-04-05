@@ -9,20 +9,23 @@ int write_in_queue(RT_QUEUE *msgQueue, void * data, int size);
  */
 int check_status(int status)
 {
+    printf("check_status: %d\n", status);
     DMessage *message;
     rt_mutex_acquire(&mutexEtat, TM_INFINITE);
     int oldStatus = etatCommRobot;
     if(status == STATUS_OK)
     {
         failsCommRobot = 0;
-        etatCommRobot = 1;
+        etatCommRobot = STATUS_OK;
     }
     else
     {
+        printf("echec de connexion (%d/3)\n", failsCommRobot+1);
         if(failsCommRobot++ >= 3)
         {
-           etatCommRobot = 0;
-           rt_sem_v(&semConnecterRobot);
+            printf("Connexion perdue... reconnexion...\n");
+            etatCommRobot = status;
+            rt_sem_v(&semConnecterRobot);
         }
     }
     // Envoi du message au moniteur
@@ -66,15 +69,17 @@ void connecter(void * arg) {
         rt_printf("tconnect : Ouverture de la communication avec le robot\n");
         status = robot->open_device(robot);
 
-        rt_mutex_acquire(&mutexEtat, TM_INFINITE);
-        etatCommRobot = status;
-        rt_mutex_release(&mutexEtat);
+        rt_printf("tconnect: Open Device Status = %d\n", status);
+        //rt_mutex_acquire(&mutexEtat, TM_INFINITE);
+        //etatCommRobot = status;
+        //rt_mutex_release(&mutexEtat);
 
         if(check_status(status) == STATUS_OK)
         {
             status = robot->start_insecurely(robot);
+            rt_printf("tconnect: Start Status = %d\n", status);
             if (check_status(status) == STATUS_OK){
-                rt_printf("tconnect : Robot démarrer\n");
+                rt_printf("tconnect : Robot démarré\n");
             }
         }
     }
@@ -130,7 +135,7 @@ void deplacer(void *arg) {
     int droite;
 
     rt_printf("tmove : Debut de l'éxecution de periodique à 1s\n");
-    rt_task_set_periodic(NULL, TM_NOW, 1000000000);
+    rt_task_set_periodic(NULL, TM_NOW, 200e+6);
 
     while (1) {
         /* Attente de l'activation périodique */
@@ -141,6 +146,8 @@ void deplacer(void *arg) {
         status = etatCommRobot;
         rt_mutex_release(&mutexEtat);
 
+        //rt_printf("tmove : status before = %d\n", status);
+        
         if (status == STATUS_OK) {
             rt_mutex_acquire(&mutexMove, TM_INFINITE);
             switch (move->get_direction(move)) {

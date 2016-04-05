@@ -24,7 +24,7 @@ RT_SEM semWatchdog;
 RT_QUEUE queueMsgGUI;
 
 int etatCommMoniteur = 1;
-int etatCommRobot = 0;
+int etatCommRobot = 1;
 int failsCommRobot = 0;
 int enableImageAcquisition = 1;
 
