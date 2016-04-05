@@ -2,6 +2,43 @@
 
 int write_in_queue(RT_QUEUE *msgQueue, void * data, int size);
 
+/**
+ * Vérifie le statut renvoyé par une commande au robot.
+ * Au bout de 3 échecs consécutifs, l'état de la connexion
+ * passe en erreur et un message est envoyé au moniteur.
+ */
+int check_status(int status)
+{
+    rt_mutex_acquire(&mutex_etat, TM_INFINITE);
+    int oldStatus = etatCommRobot;
+    if(status == STATUS_OK)
+    {
+        failsCommRobot = 0;
+    }
+    else
+    {
+        if(failsCommRobot++ >= 3)
+        {
+           etatCommRobot = status;
+           rt_sem_v(&semConnecterRobot);
+           
+        }
+    }
+    // Envoi du message au moniteur
+    if(oldStatus != etatCommRobot)
+    {
+         message = d_new_message();
+         message->put_state(message, status);
+
+         rt_printf("check_status : Envoi message\n");
+         if (write_in_queue(&queueMsgGUI, message, sizeof (DMessage)) < 0) {
+            message->free(message);
+         }
+    }
+    rt_mutex_release(&mutex_etat);
+    return status;
+}
+
 void envoyer(void * arg) {
     DMessage *msg;
     int err;
@@ -34,21 +71,12 @@ void connecter(void * arg) {
         etatCommRobot = status;
         rt_mutex_release(&mutexEtat);
 
-        if (status == STATUS_OK) {
+        if(check_status(status) == STATUS_OK)
+        {
             status = robot->start_insecurely(robot);
-            if (status == STATUS_OK){
+            if (check_status(status) == STATUS_OK){
                 rt_printf("tconnect : Robot démarrer\n");
             }
-        }
-
-        message = d_new_message();
-        message->put_state(message, status);
-
-        rt_printf("tconnecter : Envoi message\n");
-        message->print(message, 100);
-
-        if (write_in_queue(&queueMsgGUI, message, sizeof (DMessage)) < 0) {
-            message->free(message);
         }
     }
 }
@@ -142,20 +170,7 @@ void deplacer(void *arg) {
             rt_mutex_release(&mutexMove);
 
             status = robot->set_motors(robot, gauche, droite);
-
-            if (status != STATUS_OK) {
-                rt_mutex_acquire(&mutexEtat, TM_INFINITE);
-                etatCommRobot = status;
-                rt_mutex_release(&mutexEtat);
-
-                message = d_new_message();
-                message->put_state(message, status);
-
-                rt_printf("tmove : Envoi message\n");
-                if (write_in_queue(&queueMsgGUI, message, sizeof (DMessage)) < 0) {
-                    message->free(message);
-                }
-            }
+            check_status(status);
         }
     }
 }

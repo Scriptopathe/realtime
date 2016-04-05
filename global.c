@@ -16,11 +16,16 @@ RT_MUTEX mutexEtat;
 RT_MUTEX mutexMove;
 
 RT_SEM semConnecterRobot;
+RT_SEM semStartRobot;
+RT_SEM semWatchdog;
+
 
 RT_QUEUE queueMsgGUI;
 
 int etatCommMoniteur = 1;
 int etatCommRobot = 1;
+int failsCommRobot = 0;
+
 DRobot *robot;
 DMovement *move;
 DServer *serveur;
