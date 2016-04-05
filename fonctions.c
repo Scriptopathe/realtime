@@ -9,7 +9,8 @@ int write_in_queue(RT_QUEUE *msgQueue, void * data, int size);
  */
 int check_status(int status)
 {
-    rt_mutex_acquire(&mutex_etat, TM_INFINITE);
+    DMessage *message;
+    rt_mutex_acquire(&mutexEtat, TM_INFINITE);
     int oldStatus = etatCommRobot;
     if(status == STATUS_OK)
     {
@@ -35,7 +36,7 @@ int check_status(int status)
             message->free(message);
          }
     }
-    rt_mutex_release(&mutex_etat);
+    rt_mutex_release(&mutexEtat);
     return status;
 }
 
@@ -57,8 +58,6 @@ void envoyer(void * arg) {
 
 void connecter(void * arg) {
     int status;
-    DMessage *message;
-
     rt_printf("tconnect : Debut de l'exécution de tconnect\n");
 
     while (1) {
@@ -129,7 +128,6 @@ void deplacer(void *arg) {
     int status = 1;
     int gauche;
     int droite;
-    DMessage *message;
 
     rt_printf("tmove : Debut de l'éxecution de periodique à 1s\n");
     rt_task_set_periodic(NULL, TM_NOW, 1000000000);

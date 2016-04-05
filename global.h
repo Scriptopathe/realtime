@@ -29,6 +29,8 @@ extern RT_QUEUE queueMsgGUI;
 /* @variables partagées */
 extern int etatCommMoniteur;
 extern int etatCommRobot;
+extern int failsCommRobot;
+
 extern DServer *serveur;
 extern DRobot *robot;
 extern DMovement *move;
