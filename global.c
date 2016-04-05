@@ -11,6 +11,7 @@ RT_TASK tServeur;
 RT_TASK tconnect;
 RT_TASK tmove;
 RT_TASK tenvoyer;
+RT_TASK tImageAcquisition;
 
 RT_MUTEX mutexEtat;
 RT_MUTEX mutexMove;
@@ -23,8 +24,9 @@ RT_SEM semWatchdog;
 RT_QUEUE queueMsgGUI;
 
 int etatCommMoniteur = 1;
-int etatCommRobot = 1;
+int etatCommRobot = 0;
 int failsCommRobot = 0;
+int enableImageAcquisition = 1;
 
 DRobot *robot;
 DMovement *move;
@@ -37,3 +39,4 @@ int PRIORITY_TSERVEUR = 30;
 int PRIORITY_TCONNECT = 20;
 int PRIORITY_TMOVE = 10;
 int PRIORITY_TENVOYER = 25;
+int PRIORITY_TIMAGEACQ = 24;

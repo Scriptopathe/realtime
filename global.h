@@ -15,6 +15,7 @@ extern RT_TASK tServeur;
 extern RT_TASK tconnect;
 extern RT_TASK tmove;
 extern RT_TASK tenvoyer;
+extern RT_TASK tImageAcquisition;
 
 /* @descripteurs des mutex */
 extern RT_MUTEX mutexEtat;
@@ -30,6 +31,7 @@ extern RT_QUEUE queueMsgGUI;
 extern int etatCommMoniteur;
 extern int etatCommRobot;
 extern int failsCommRobot;
+extern int enableImageAcquisition;
 
 extern DServer *serveur;
 extern DRobot *robot;
@@ -41,6 +43,7 @@ extern int PRIORITY_TSERVEUR;
 extern int PRIORITY_TCONNECT;
 extern int PRIORITY_TMOVE;
 extern int PRIORITY_TENVOYER;
+extern int PRIORITY_TIMAGEACQ;
 
 #endif	/* GLOBAL_H */
 

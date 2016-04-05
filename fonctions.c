@@ -15,14 +15,14 @@ int check_status(int status)
     if(status == STATUS_OK)
     {
         failsCommRobot = 0;
+        etatCommRobot = 1;
     }
     else
     {
         if(failsCommRobot++ >= 3)
         {
-           etatCommRobot = status;
+           etatCommRobot = 0;
            rt_sem_v(&semConnecterRobot);
-           
         }
     }
     // Envoi du message au moniteur
