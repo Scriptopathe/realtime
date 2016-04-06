@@ -16,13 +16,19 @@ extern RT_TASK tconnect;
 extern RT_TASK tmove;
 extern RT_TASK tenvoyer;
 extern RT_TASK tImageAcquisition;
+extern RT_TASK tWatchdog;
 
 /* @descripteurs des mutex */
 extern RT_MUTEX mutexEtat;
+extern RT_MUTEX mutexRobot;
 extern RT_MUTEX mutexMove;
+extern RT_MUTEX mutexWatchdog;
 
 /* @descripteurs des sempahore */
 extern RT_SEM semConnecterRobot;
+extern RT_SEM semStartRobot;
+extern RT_SEM semWatchdog;
+extern RT_SEM semWatchdog2;
 
 /* @descripteurs des files de messages */
 extern RT_QUEUE queueMsgGUI;
@@ -32,6 +38,7 @@ extern int etatCommMoniteur;
 extern int etatCommRobot;
 extern int failsCommRobot;
 extern int enableImageAcquisition;
+extern int watchdogReset;
 
 extern DServer *serveur;
 extern DRobot *robot;
@@ -44,6 +51,7 @@ extern int PRIORITY_TCONNECT;
 extern int PRIORITY_TMOVE;
 extern int PRIORITY_TENVOYER;
 extern int PRIORITY_TIMAGEACQ;
+extern int PRIORITY_TWATCHDOG;
 
 #endif	/* GLOBAL_H */
 

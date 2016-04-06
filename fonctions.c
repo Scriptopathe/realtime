@@ -43,6 +43,41 @@ int check_status(int status)
     return status;
 }
 
+
+void watchdog(void* arg)
+{
+    int reset;
+    
+    while (1) 
+    {
+        // On attend le signal de lancement du watchdog
+        rt_sem_v(&semWatchdog2);
+        rt_sem_p(&semWatchdog, TM_INFINITE);
+
+        // On remet reset la période.
+        rt_task_set_periodic(NULL, TM_NOW, 1000e+6); // 1sec
+
+        reset = 0;
+        while(!reset)
+        {
+       
+            // Appel du reload.
+            rt_mutex_acquire(&mutexRobot, TM_INFINITE);
+            robot->reload_wdt(robot);
+            rt_mutex_release(&mutexRobot);
+
+            // On check le status du watchdog
+            rt_mutex_acquire(&mutexWatchdog, TM_INFINITE);
+            reset = watchdogReset;
+            rt_mutex_release(&mutexWatchdog);
+
+            /* Attente de l'activation périodique */
+            rt_task_wait_period(NULL);
+
+        }
+    }
+}
+
 void envoyer(void * arg) {
     DMessage *msg;
     int err;
@@ -76,11 +111,24 @@ void connecter(void * arg) {
 
         if(check_status(status) == STATUS_OK)
         {
+            // On démarre le watchdog
+            rt_mutex_acquire(&mutexWatchdog, TM_INFINITE);
+            watchdogReset = 1;
+            rt_mutex_release(&mutexWatchdog);
+            
+            // On attend que le watchdog soit sorti de sa boucle.
+            rt_sem_p(&semWatchdog2, TM_INFINITE);
+            
+            // On démarre le robot une fois le watchdog complètement 
+            // démarré.
             status = robot->start_insecurely(robot);
             rt_printf("tconnect: Start Status = %d\n", status);
             if (check_status(status) == STATUS_OK){
                 rt_printf("tconnect : Robot démarré\n");
             }
+
+            // On lance le watchdog
+            rt_sem_v(&semWatchdog);
         }
     }
 }
