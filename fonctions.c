@@ -35,9 +35,11 @@ int check_status(int status)
          message->put_state(message, status);
 
          rt_printf("check_status : Envoi message\n");
-         if (write_in_queue(&queueMsgGUI, message, sizeof (DMessage)) < 0) {
+         if (write_in_queue(&queueMsgGUI, message, sizeof (DMessage)) < 0) 
+         {
             message->free(message);
          }
+         
     }
     rt_mutex_release(&mutexEtat);
     return status;
@@ -84,7 +86,8 @@ void envoyer(void * arg) {
 
     while (1) {
         rt_printf("tenvoyer : Attente d'un message\n");
-        if ((err = rt_queue_read(&queueMsgGUI, &msg, sizeof (DMessage), TM_INFINITE)) >= 0) {
+        if ((err = rt_queue_read(&queueMsgGUI, &msg, sizeof (DMessage), TM_INFINITE)) >= 0) 
+        {
             rt_printf("tenvoyer : envoi d'un message au moniteur\n");
             serveur->send(serveur, msg);
             msg->free(msg);
@@ -92,6 +95,29 @@ void envoyer(void * arg) {
             rt_printf("Error msg queue write: %s\n", strerror(-err));
         }
     }
+}
+
+void batterylevel(void * arg)
+{
+    
+    int batLevel, status;
+    DBattery * batBattery = d_new_battery();
+    rt_mutex_acquire(&mutexRobot, TM_INFINITE);
+    status = robot->get_vbat(robot, &batLevel);
+    rt_mutex_release(&mutexRobot);
+    if(check_status(status) == STATUS_OK)
+    {
+         DMessage* message = d_new_message();
+         message->put_state(message, status);
+
+         rt_printf("check_status : Envoi message\n");
+         if (write_in_queue(&queueMsgGUI, message, sizeof (DMessage)) < 0)
+         {
+            message->free(message);
+         }
+         
+    }
+
 }
 
 void connecter(void * arg) {
@@ -229,6 +255,7 @@ void deplacer(void *arg) {
 }
 
 int write_in_queue(RT_QUEUE *msgQueue, void * data, int size) {
+    // int rt_queue_write (RT_QUEUE ∗ q, const void ∗ buf, size_t size, int mode)
     void *msg;
     int err;
 

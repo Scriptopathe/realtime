@@ -18,6 +18,7 @@ extern RT_TASK tenvoyer;
 extern RT_TASK tImageAcquisition;
 extern RT_TASK tWatchdog;
 
+
 /* @descripteurs des mutex */
 extern RT_MUTEX mutexEtat;
 extern RT_MUTEX mutexRobot;
