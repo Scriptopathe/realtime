@@ -229,6 +229,10 @@ void communiquer(void *arg) {
                             rt_printf("tserver : Action arena failed\n");
                             setFindingArena(0);
                             break;
+                        case  ACTION_COMPUTE_CONTINUOUSLY_POSITION:
+                            rt_printf("tserver: Compute position\n");
+                            setPosComputeEnabled(1);
+                            break;
                     }
                     break;
                 case MESSAGE_TYPE_MOVEMENT:

@@ -19,6 +19,7 @@ extern RT_TASK tImageAcquisition;
 extern RT_TASK tWatchdog;
 extern RT_TASK tBattery;
 extern RT_TASK tArena;
+extern RT_TASK tPosition;
 
 
 /* @descripteurs des mutex */
@@ -28,6 +29,7 @@ extern RT_MUTEX mutexMove;
 extern RT_MUTEX mutexWatchdog;
 extern RT_MUTEX mutexImage;
 extern RT_MUTEX mutexArena;
+extern RT_MUTEX mutexPosCompute;
 
 /* @descripteurs des sempahore */
 extern RT_SEM semConnecterRobot;
@@ -46,6 +48,7 @@ extern int failsCommRobot;
 extern int enableImageAcquisition;
 extern int watchdogReset;
 extern int findingArena;
+extern int enablePosCompute;
 
 
 extern DServer *serveur;
@@ -64,6 +67,8 @@ extern int PRIORITY_TENVOYER;
 extern int PRIORITY_TIMAGEACQ;
 extern int PRIORITY_TWATCHDOG;
 extern int PRIORITY_TBATTERY;
+extern int PRIORITY_TARENA;
+extern int PRIORITY_TPOSITION;
 
 void setImage(DImage* image);
 int isFindingArena();

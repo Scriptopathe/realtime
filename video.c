@@ -54,7 +54,7 @@ void computeArena(void* arg)
 
 void computePosition(void* arg)
 {
-
+ 
 }
 
 /**
@@ -92,6 +92,27 @@ void acquireImage(void* arg)
         camera->get_frame(camera, img);
         setImage(img); 
 
+        // Traçage de la position (si activé)
+        if(posComputeEnabled())
+        {
+            if(arena != NULL)
+            {
+                DPosition* pos = img->compute_robot_position(img, arena);
+                if(pos != NULL)
+                {
+                    d_imageshop_draw_position(img, pos);
+                    
+                    // Message avec la position
+                    DMessage* message = d_new_message();
+                    message->put_position(message, pos);
+                    if (write_in_queue(&queueMsgGUI, message, sizeof (DMessage)) < 0)
+                    {
+                        message->free(message);
+                    }
+                }
+            }
+        }
+        
         // Compression
         jpeg->compress(jpeg, img); 
 
