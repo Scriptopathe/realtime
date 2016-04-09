@@ -17,6 +17,7 @@ extern RT_TASK tmove;
 extern RT_TASK tenvoyer;
 extern RT_TASK tImageAcquisition;
 extern RT_TASK tWatchdog;
+extern RT_TASK tBattery;
 
 
 /* @descripteurs des mutex */
@@ -53,6 +54,7 @@ extern int PRIORITY_TMOVE;
 extern int PRIORITY_TENVOYER;
 extern int PRIORITY_TIMAGEACQ;
 extern int PRIORITY_TWATCHDOG;
+extern int PRIORITY_TBATTERY;
 
 #endif	/* GLOBAL_H */
 

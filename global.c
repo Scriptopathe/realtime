@@ -12,6 +12,7 @@ RT_TASK tconnect;
 RT_TASK tmove;
 RT_TASK tenvoyer;
 RT_TASK tImageAcquisition;
+RT_TASK tBattery;
 
 RT_MUTEX mutexEtat;
 RT_MUTEX mutexMove;
@@ -46,3 +47,4 @@ int PRIORITY_TMOVE = 15;
 int PRIORITY_TENVOYER = 25;
 int PRIORITY_TIMAGEACQ = 11;
 int PRIORITY_TWATCHDOG = 23;
+int PRIORITY_TBATTERY = 24;

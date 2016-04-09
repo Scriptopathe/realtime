@@ -97,25 +97,34 @@ void envoyer(void * arg) {
     }
 }
 
-void batterylevel(void * arg)
+void check_battery(void * arg)
 {
-    
     int batLevel, status;
     DBattery * batBattery = d_new_battery();
-    rt_mutex_acquire(&mutexRobot, TM_INFINITE);
-    status = robot->get_vbat(robot, &batLevel);
-    rt_mutex_release(&mutexRobot);
-    if(check_status(status) == STATUS_OK)
-    {
-         DMessage* message = d_new_message();
-         message->put_state(message, status);
+    
+    // Période : 250ms
+    rt_task_set_periodic(NULL, TM_NOW, 250e+6);
 
-         rt_printf("check_status : Envoi message\n");
-         if (write_in_queue(&queueMsgGUI, message, sizeof (DMessage)) < 0)
-         {
-            message->free(message);
-         }
-         
+    while(1)
+    {
+        rt_task_wait_period(NULL);
+
+        // Status
+        rt_mutex_acquire(&mutexRobot, TM_INFINITE);
+        status = robot->get_vbat(robot, &batLevel);
+        rt_mutex_release(&mutexRobot);
+        
+        if(check_status(status) == STATUS_OK)
+        {
+             DMessage* message = d_new_message();
+             message->put_state(message, status);
+
+             rt_printf("check_battery : Envoi message\n");
+             if (write_in_queue(&queueMsgGUI, message, sizeof (DMessage)) < 0)
+             {
+                message->free(message);
+             }
+        }
     }
 
 }
