@@ -139,6 +139,8 @@ void check_battery(void * arg)
              }
         }
     }
+
+    batBattery->free(batBattery);
 }
 
 void connecter(void * arg) {
@@ -214,6 +216,17 @@ void communiquer(void *arg) {
                         case ACTION_CONNECT_ROBOT:
                             rt_printf("tserver : Action connecter robot\n");
                             rt_sem_v(&semConnecterRobot);
+                            break;
+                        case ACTION_FIND_ARENA:
+                            rt_printf("tserver : Action find arena\n");
+                            rt_sem_v(&semArena);
+                            break;
+                        case ACTION_ARENA_IS_FOUND:
+                            rt_printf("tserver : Action find arena\n");
+                            setFindingArena(0);
+                            break;
+                        case ACTION_ARENA_FAILED:
+                            setFindingArena(0);
                             break;
                     }
                     break;

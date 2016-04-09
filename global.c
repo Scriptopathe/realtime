@@ -19,11 +19,13 @@ RT_MUTEX mutexMove;
 RT_MUTEX mutexWatchdog;
 RT_MUTEX mutexRobot;
 RT_MUTEX mutexImage;
+RT_MUTEX mutexArena;
 
 RT_SEM semConnecterRobot;
 RT_SEM semStartRobot;
 RT_SEM semWatchdog;
 RT_SEM semWatchdog2;
+RT_SEM semArena;
 
 
 
@@ -34,12 +36,14 @@ int etatCommRobot = 1;
 int failsCommRobot = 0;
 int enableImageAcquisition = 1;
 int watchdogReset = 1;
+int findingArena = 0;
 
 DRobot *robot;
 DMovement *move;
 DServer *serveur;
 DCamera *camera;
 DImage *image;
+DArena *arena;
 
 
 int MSG_QUEUE_SIZE = 10;
@@ -51,3 +55,36 @@ int PRIORITY_TENVOYER = 25;
 int PRIORITY_TIMAGEACQ = 11;
 int PRIORITY_TWATCHDOG = 23;
 int PRIORITY_TBATTERY = 24;
+
+void setImage(DImage* img)
+{
+   rt_mutex_acquire(&mutexImage, TM_INFINITE);
+   memcpy(image, img, sizeof(DImage)); 
+   rt_mutex_release(&mutexImage);
+}
+
+int isFindingArena()
+{
+    int value;
+    rt_mutex_acquire(&mutexArena, TM_INFINITE);
+    value = findingArena;
+    rt_mutex_release(&mutexArena);
+    return value;
+}
+
+void setFindingArena(int value)
+{
+    rt_mutex_acquire(&mutexArena, TM_INFINITE);
+    findingArena = value;
+    rt_mutex_release(&mutexArena);
+}
+
+int getMonitorStatus()
+{
+    int comStatus;
+    rt_mutex_acquire(&mutexEtat, TM_INFINITE);
+    comStatus = etatCommMoniteur;
+    rt_mutex_release(&mutexEtat);
+    return comStatus;
+}
+

@@ -26,12 +26,14 @@ extern RT_MUTEX mutexRobot;
 extern RT_MUTEX mutexMove;
 extern RT_MUTEX mutexWatchdog;
 extern RT_MUTEX mutexImage;
+extern RT_MUTEX mutexArena;
 
 /* @descripteurs des sempahore */
 extern RT_SEM semConnecterRobot;
 extern RT_SEM semStartRobot;
 extern RT_SEM semWatchdog;
 extern RT_SEM semWatchdog2;
+extern RT_SEM semArena;
 
 /* @descripteurs des files de messages */
 extern RT_QUEUE queueMsgGUI;
@@ -42,6 +44,7 @@ extern int etatCommRobot;
 extern int failsCommRobot;
 extern int enableImageAcquisition;
 extern int watchdogReset;
+extern int findingArena;
 
 
 extern DServer *serveur;
@@ -49,6 +52,7 @@ extern DRobot *robot;
 extern DMovement *move;
 extern DCamera *camera;
 extern DImage *image;
+extern DArena *arena;
 
 /* @constantes */
 extern int MSG_QUEUE_SIZE;
@@ -60,5 +64,9 @@ extern int PRIORITY_TIMAGEACQ;
 extern int PRIORITY_TWATCHDOG;
 extern int PRIORITY_TBATTERY;
 
+void setImage(DImage* image);
+int isFindingArena();
+void setFindingArena(int value);
+int getMonitorStatus();
 #endif	/* GLOBAL_H */
 
