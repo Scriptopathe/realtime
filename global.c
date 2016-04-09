@@ -18,6 +18,7 @@ RT_MUTEX mutexEtat;
 RT_MUTEX mutexMove;
 RT_MUTEX mutexWatchdog;
 RT_MUTEX mutexRobot;
+RT_MUTEX mutexImage;
 
 RT_SEM semConnecterRobot;
 RT_SEM semStartRobot;
@@ -37,6 +38,8 @@ int watchdogReset = 1;
 DRobot *robot;
 DMovement *move;
 DServer *serveur;
+DCamera *camera;
+DImage *image;
 
 
 int MSG_QUEUE_SIZE = 10;

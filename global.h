@@ -25,6 +25,7 @@ extern RT_MUTEX mutexEtat;
 extern RT_MUTEX mutexRobot;
 extern RT_MUTEX mutexMove;
 extern RT_MUTEX mutexWatchdog;
+extern RT_MUTEX mutexImage;
 
 /* @descripteurs des sempahore */
 extern RT_SEM semConnecterRobot;
@@ -42,9 +43,12 @@ extern int failsCommRobot;
 extern int enableImageAcquisition;
 extern int watchdogReset;
 
+
 extern DServer *serveur;
 extern DRobot *robot;
 extern DMovement *move;
+extern DCamera *camera;
+extern DImage *image;
 
 /* @constantes */
 extern int MSG_QUEUE_SIZE;
