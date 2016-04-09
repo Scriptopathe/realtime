@@ -154,6 +154,12 @@ void startTasks() {
         exit(EXIT_FAILURE);
     }
 
+    if (err = rt_task_start(&tBattery, &check_battery, NULL)) {
+        rt_printf("Error task start: %s\n", strerror(-err));
+        exit(EXIT_FAILURE);
+    }
+
+
 
 }
 
