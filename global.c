@@ -13,6 +13,7 @@ RT_TASK tmove;
 RT_TASK tenvoyer;
 RT_TASK tImageAcquisition;
 RT_TASK tBattery;
+RT_TASK tArena;
 
 RT_MUTEX mutexEtat;
 RT_MUTEX mutexMove;

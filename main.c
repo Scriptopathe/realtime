@@ -134,6 +134,11 @@ void initStruct(void) {
         rt_printf("Error task create: %s\n", strerror(-err));
         exit(EXIT_FAILURE);
     }
+    if (err = rt_task_create(&tArena, NULL, 0, PRIORITY_TBATTERY, 0)) {
+        rt_printf("Error task create: %s\n", strerror(-err));
+        exit(EXIT_FAILURE);
+    }
+
 
 
 
@@ -179,6 +184,11 @@ void startTasks() {
         rt_printf("Error task start: %s\n", strerror(-err));
         exit(EXIT_FAILURE);
     }
+    if (err = rt_task_start(&tArena, &computeArena, NULL)) {
+        rt_printf("Error task start: %s\n", strerror(-err));
+        exit(EXIT_FAILURE);
+    }
+
 
 
 

@@ -18,6 +18,7 @@ extern RT_TASK tenvoyer;
 extern RT_TASK tImageAcquisition;
 extern RT_TASK tWatchdog;
 extern RT_TASK tBattery;
+extern RT_TASK tArena;
 
 
 /* @descripteurs des mutex */
