@@ -130,7 +130,7 @@ void check_battery(void * arg)
         if(check_status(status) == STATUS_OK)
         {
              DMessage* message = d_new_message();
-             message->put_state(message, status);
+             message->put_battery_level(message, batBattery);
 
              rt_printf("check_battery : Envoi message\n");
              if (write_in_queue(&queueMsgGUI, message, sizeof (DMessage)) < 0)
@@ -229,7 +229,7 @@ void communiquer(void *arg) {
                             rt_printf("tserver : Action arena failed\n");
                             setFindingArena(0);
                             break;
-                        case  ACTION_COMPUTE_CONTINUOUSLY_POSITION:
+                        case ACTION_COMPUTE_CONTINUOUSLY_POSITION:
                             rt_printf("tserver: Compute position\n");
                             setPosComputeEnabled(1);
                             break;

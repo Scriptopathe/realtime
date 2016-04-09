@@ -97,9 +97,11 @@ void acquireImage(void* arg)
         {
             if(arena != NULL)
             {
+                rt_printf("\033[1;32mPOSITION COMPUTE ENABLED. \033[0m\n");
                 DPosition* pos = img->compute_robot_position(img, arena);
                 if(pos != NULL)
                 {
+                    rt_printf("\033[1;32mPOSITION NOT NULL. \033[0m\n");
                     d_imageshop_draw_position(img, pos);
                     
                     // Message avec la position
