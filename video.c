@@ -26,6 +26,7 @@ void computeArena(void* arg)
         arena = image->compute_arena_position(image);
         if(arena != NULL)
         {
+            rt_printf("ARENA TROUVEE !!!!!!! YEESSS !\n");
             d_imageshop_draw_arena(image, arena);
             jpeg->compress(jpeg, image);
 
@@ -40,6 +41,10 @@ void computeArena(void* arg)
                    message->free(message);
                 }
             }
+        }
+        else
+        {
+            rt_printf("ARENA NULL !!!!!!! !\n");
         }
         rt_mutex_release(&mutexImage);
         rt_mutex_release(&mutexArena);

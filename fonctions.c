@@ -222,10 +222,11 @@ void communiquer(void *arg) {
                             rt_sem_v(&semArena);
                             break;
                         case ACTION_ARENA_IS_FOUND:
-                            rt_printf("tserver : Action find arena\n");
+                            rt_printf("tserver : Action arena is found\n");
                             setFindingArena(0);
                             break;
                         case ACTION_ARENA_FAILED:
+                            rt_printf("tserver : Action arena failed\n");
                             setFindingArena(0);
                             break;
                     }
