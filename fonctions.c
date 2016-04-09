@@ -1,5 +1,6 @@
 #include "fonctions.h"
 
+#define EN_WD 0
 int write_in_queue(RT_QUEUE *msgQueue, void * data, int size);
 
 /**
@@ -48,6 +49,9 @@ int check_status(int status)
 
 void watchdog(void* arg)
 {
+#if !EN_WD
+    return;
+#endif
     int reset;
     
     while (1) 
@@ -140,12 +144,10 @@ void connecter(void * arg) {
         status = robot->open_device(robot);
 
         rt_printf("tconnect: Open Device Status = %d\n", status);
-        //rt_mutex_acquire(&mutexEtat, TM_INFINITE);
-        //etatCommRobot = status;
-        //rt_mutex_release(&mutexEtat);
-
+        
         if(check_status(status) == STATUS_OK)
         {
+#if EN_WD
             // On démarre le watchdog
             rt_mutex_acquire(&mutexWatchdog, TM_INFINITE);
             watchdogReset = 1;
@@ -156,7 +158,7 @@ void connecter(void * arg) {
             
             // On démarre le robot une fois le watchdog complètement 
             // démarré.
-            status = robot->start_insecurely(robot);
+            status = robot->start(robot);
             rt_printf("tconnect: Start Status = %d\n", status);
             if (check_status(status) == STATUS_OK){
                 rt_printf("tconnect : Robot démarré\n");
@@ -164,6 +166,14 @@ void connecter(void * arg) {
 
             // On lance le watchdog
             rt_sem_v(&semWatchdog);
+#else
+            // Version sans watchdog
+            status = robot->start_insecurely(robot);
+            rt_printf("tconnect: Start Status = %d\n", status);
+            if (check_status(status) == STATUS_OK){
+                rt_printf("tconnect : Robot démarré\n");
+            }
+#endif
         }
     }
 }
