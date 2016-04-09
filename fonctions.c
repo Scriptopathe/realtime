@@ -113,6 +113,15 @@ void check_battery(void * arg)
     {
         rt_task_wait_period(NULL);
 
+        // Si le robot n'est pas connecté, on attend la prochaine
+        // activation périodique pour retester.
+        rt_mutex_acquire(&mutexEtat, TM_INFINITE);
+        status = etatCommRobot;
+        rt_mutex_release(&mutexEtat);
+
+        if(status != STATUS_OK)
+            continue;
+
         // Status
         rt_mutex_acquire(&mutexRobot, TM_INFINITE);
         status = robot->get_vbat(robot, &batLevel);
@@ -130,7 +139,6 @@ void check_battery(void * arg)
              }
         }
     }
-
 }
 
 void connecter(void * arg) {
