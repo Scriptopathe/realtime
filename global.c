@@ -23,6 +23,7 @@ RT_MUTEX mutexRobot;
 RT_MUTEX mutexImage;
 RT_MUTEX mutexArena;
 RT_MUTEX mutexPosCompute;
+RT_MUTEX mutexCamera;
 
 RT_SEM semConnecterRobot;
 RT_SEM semStartRobot;
@@ -48,7 +49,7 @@ DServer *serveur;
 DCamera *camera;
 DImage *image;
 DArena *arena;
-
+DArena *tmpArena;
 
 int MSG_QUEUE_SIZE = 10;
 

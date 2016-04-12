@@ -30,6 +30,7 @@ extern RT_MUTEX mutexWatchdog;
 extern RT_MUTEX mutexImage;
 extern RT_MUTEX mutexArena;
 extern RT_MUTEX mutexPosCompute;
+extern RT_MUTEX mutexCamera;
 
 /* @descripteurs des sempahore */
 extern RT_SEM semConnecterRobot;
@@ -57,6 +58,7 @@ extern DMovement *move;
 extern DCamera *camera;
 extern DImage *image;
 extern DArena *arena;
+extern DArena *tmpArena;
 
 /* @constantes */
 extern int MSG_QUEUE_SIZE;

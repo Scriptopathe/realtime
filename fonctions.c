@@ -223,6 +223,13 @@ void communiquer(void *arg) {
                             break;
                         case ACTION_ARENA_IS_FOUND:
                             rt_printf("tserver : Action arena is found\n");
+
+                            // On remplace l'ancienne par la nouvelle.
+                            rt_mutex_acquire(&mutexArena, TM_INFINITE);
+                            free(arena);
+                            arena = tmpArena;
+                            rt_mutex_release(&mutexArena);
+
                             setFindingArena(0);
                             break;
                         case ACTION_ARENA_FAILED:

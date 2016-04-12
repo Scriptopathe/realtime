@@ -7,8 +7,8 @@
  */
 void computeArena(void* arg)
 {
-    DArena* tmp;
     DJpegimage* jpeg = d_new_jpegimage();
+    DImage* img = d_new_image();
     int comStatus;
 
     while(1)
@@ -16,6 +16,7 @@ void computeArena(void* arg)
         // On attend l'ordre de trouver l'arène.
         rt_sem_p(&semArena, TM_INFINITE);
         setFindingArena(1);
+        rt_printf("\033[31;1mARENA GP \033[0m");
 
         if(image == NULL)
             continue;
@@ -23,29 +24,39 @@ void computeArena(void* arg)
         rt_mutex_acquire(&mutexArena, TM_INFINITE);
         rt_mutex_acquire(&mutexImage, TM_INFINITE);
 
-        arena = image->compute_arena_position(image);
-        if(arena != NULL)
+        tmpArena = image->compute_arena_position(image);
+
+        rt_mutex_acquire(&mutexCamera, TM_INFINITE);
+        camera->get_frame(camera, img);
+        rt_mutex_release(&mutexCamera);
+        setImage(img);
+        
+
+        if(tmpArena != NULL)
         {
             rt_printf("ARENA TROUVEE !!!!!!! YEESSS !\n");
-            d_imageshop_draw_arena(image, arena);
-            jpeg->compress(jpeg, image);
-
-            // Envoi au moniteur
-            comStatus = getMonitorStatus();
-            if(comStatus == STATUS_OK)
-            {
-                DMessage* message = d_new_message();
-                message->put_jpeg_image(message, jpeg);
-                if (write_in_queue(&queueMsgGUI, message, sizeof (DMessage)) < 0)
-                {
-                   message->free(message);
-                }
-            }
+            d_imageshop_draw_arena(image, tmpArena);
         }
         else
         {
             rt_printf("ARENA NULL !!!!!!! !\n");
         }
+
+        // Compression
+        jpeg->compress(jpeg, image);
+
+        // Envoi au moniteur
+        comStatus = getMonitorStatus();
+        if(comStatus == STATUS_OK)
+        {
+            DMessage* message = d_new_message();
+            message->put_jpeg_image(message, jpeg);
+            if (write_in_queue(&queueMsgGUI, message, sizeof (DMessage)) < 0)
+            {
+               //message->free(message);
+            }
+        }
+
         rt_mutex_release(&mutexImage);
         rt_mutex_release(&mutexArena);
     }
@@ -89,7 +100,10 @@ void acquireImage(void* arg)
         
         
         // Obtention de l'image
+        rt_mutex_acquire(&mutexCamera, TM_INFINITE);
         camera->get_frame(camera, img);
+        rt_mutex_release(&mutexCamera);
+
         setImage(img); 
 
         // Traçage de la position (si activé)
@@ -109,11 +123,18 @@ void acquireImage(void* arg)
                     message->put_position(message, pos);
                     if (write_in_queue(&queueMsgGUI, message, sizeof (DMessage)) < 0)
                     {
-                        message->free(message);
+                        // message->free(message);
                     }
                 }
             }
         }
+
+        rt_mutex_acquire(&mutexArena, TM_INFINITE);
+        if(arena != NULL)
+        {
+            d_imageshop_draw_arena(img, arena);
+        }
+        rt_mutex_release(&mutexArena);
         
         // Compression
         jpeg->compress(jpeg, img); 
@@ -126,7 +147,7 @@ void acquireImage(void* arg)
             message->put_jpeg_image(message, jpeg);
             if (write_in_queue(&queueMsgGUI, message, sizeof (DMessage)) < 0)
             {
-               message->free(message);
+               //message->free(message);
             }
         }
     }
