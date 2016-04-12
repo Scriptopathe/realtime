@@ -215,32 +215,30 @@ void communiquer(void *arg) {
                     action->from_message(action, msg);
                     switch (action->get_order(action)) {
                         case ACTION_CONNECT_ROBOT:
-                            printf("tserver : Action connecter robot\n");
+                            //printf("tserver : Action connecter robot\n");
                             rt_sem_v(&semConnecterRobot);
                             break;
                         case ACTION_FIND_ARENA:
-                            printf("tserver : Action find arena\n");
+                            //printf("tserver : Action find arena\n");
                             rt_sem_v(&semArena);
                             break;
                         case ACTION_ARENA_IS_FOUND:
-                            printf("tserver : Action arena is found\n");
-
+                            //printf("tserver : Action arena is found\n");
                             // On remplace l'ancienne par la nouvelle.
                             rt_mutex_acquire(&mutexArena, TM_INFINITE);
                             free(arena);
                             arena = tmpArena;
                             rt_mutex_release(&mutexArena);
-
                             setFindingArena(0);
                             break;
                         case ACTION_ARENA_FAILED:
-                            printf("tserver : Action arena failed\n");
                             setFindingArena(0);
-
                             break;
                         case ACTION_COMPUTE_CONTINUOUSLY_POSITION:
-                            printf("tserver: Compute position\n");
                             setPosComputeEnabled(1);
+                            break;
+                        case ACTION_STOP_COMPUTE_POSITION:
+                            setPosComputeEnabled(0);
                             break;
                     }
 

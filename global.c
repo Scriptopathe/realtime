@@ -107,7 +107,10 @@ int posComputeEnabled()
 void setPosComputeEnabled(int value)
 {
     rt_mutex_acquire(&mutexPosCompute, TM_INFINITE);
-    enablePosCompute = value;
+    if(value < 0)
+        enablePosCompute ^= 1;
+    else
+        enablePosCompute = value;
     rt_mutex_release(&mutexPosCompute);
 }
 

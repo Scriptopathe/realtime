@@ -111,9 +111,9 @@ void acquireImage(void* arg)
         // Traçage de la position (si activé)
         if(posComputeEnabled())
         {
+            rt_printf("\033[1;32mPOSITION COMPUTE ENABLED. \033[0m\n");
             if(arena != NULL)
             {
-                rt_printf("\033[1;32mPOSITION COMPUTE ENABLED. \033[0m\n");
                 DPosition* pos = img->compute_robot_position(img, arena);
                 if(pos != NULL)
                 {
