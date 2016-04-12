@@ -26,7 +26,7 @@ int check_status(int status)
         {
             printf("Connexion perdue... reconnexion...\n");
             etatCommRobot = status;
-            rt_sem_v(&semConnecterRobot);
+            // rt_sem_v(&semConnecterRobot);
         }
     }
     // Envoi du message au moniteur
@@ -35,10 +35,10 @@ int check_status(int status)
          message = d_new_message();
          message->put_state(message, status);
 
-         rt_printf("check_status : Envoi message\n");
+         printf("check_status : Envoi message\n");
          if (write_in_queue(&queueMsgGUI, message, sizeof (DMessage)) < 0) 
          {
-            message->free(message);
+            // message->free(message);
          }
          
     }
@@ -89,14 +89,14 @@ void envoyer(void * arg) {
     int err;
 
     while (1) {
-        rt_printf("tenvoyer : Attente d'un message\n");
+        printf("tenvoyer : Attente d'un message\n");
         if ((err = rt_queue_read(&queueMsgGUI, &msg, sizeof (DMessage), TM_INFINITE)) >= 0) 
         {
-            rt_printf("tenvoyer : envoi d'un message au moniteur\n");
+            printf("tenvoyer : envoi d'un message au moniteur\n");
             serveur->send(serveur, msg);
             msg->free(msg);
         } else {
-            rt_printf("Error msg queue write: %s\n", strerror(-err));
+            printf("Error msg queue write: %s\n", strerror(-err));
         }
     }
 }
@@ -104,7 +104,6 @@ void envoyer(void * arg) {
 void check_battery(void * arg)
 {
     int batLevel, status;
-    DBattery * batBattery = d_new_battery();
     
     // Période : 250ms
     rt_task_set_periodic(NULL, TM_NOW, 250e+6);
@@ -126,34 +125,36 @@ void check_battery(void * arg)
         rt_mutex_acquire(&mutexRobot, TM_INFINITE);
         status = robot->get_vbat(robot, &batLevel);
         rt_mutex_release(&mutexRobot);
+
+        DBattery * battery = d_new_battery();
+        battery->set_level(battery, batLevel);
         
         if(check_status(status) == STATUS_OK)
         {
              DMessage* message = d_new_message();
-             message->put_battery_level(message, batBattery);
+             message->put_battery_level(message, battery);
 
-             rt_printf("check_battery : Envoi message\n");
+             printf("check_battery : Envoi message\n");
              if (write_in_queue(&queueMsgGUI, message, sizeof (DMessage)) < 0)
              {
-                message->free(message);
+                // message->free(message);
              }
         }
     }
 
-    batBattery->free(batBattery);
 }
 
 void connecter(void * arg) {
     int status;
-    rt_printf("tconnect : Debut de l'exécution de tconnect\n");
+    printf("tconnect : Debut de l'exécution de tconnect\n");
 
     while (1) {
-        rt_printf("tconnect : Attente du sémarphore semConnecterRobot\n");
+        printf("tconnect : Attente du sémarphore semConnecterRobot\n");
         rt_sem_p(&semConnecterRobot, TM_INFINITE);
-        rt_printf("tconnect : Ouverture de la communication avec le robot\n");
+        printf("tconnect : Ouverture de la communication avec le robot\n");
         status = robot->open_device(robot);
 
-        rt_printf("tconnect: Open Device Status = %d\n", status);
+        printf("tconnect: Open Device Status = %d\n", status);
         
         if(check_status(status) == STATUS_OK)
         {
@@ -169,9 +170,9 @@ void connecter(void * arg) {
             // On démarre le robot une fois le watchdog complètement 
             // démarré.
             status = robot->start(robot);
-            rt_printf("tconnect: Start Status = %d\n", status);
+            printf("tconnect: Start Status = %d\n", status);
             if (check_status(status) == STATUS_OK){
-                rt_printf("tconnect : Robot démarré\n");
+                printf("tconnect : Robot démarré\n");
             }
 
             // On lance le watchdog
@@ -179,9 +180,9 @@ void connecter(void * arg) {
 #else
             // Version sans watchdog
             status = robot->start_insecurely(robot);
-            rt_printf("tconnect: Start Status = %d\n", status);
+            printf("tconnect: Start Status = %d\n", status);
             if (check_status(status) == STATUS_OK){
-                rt_printf("tconnect : Robot démarré\n");
+                printf("tconnect : Robot démarré\n");
             }
 #endif
         }
@@ -193,36 +194,36 @@ void communiquer(void *arg) {
     int var1 = 1;
     int num_msg = 0;
 
-    rt_printf("tserver : Début de l'exécution de serveur\n");
+    printf("tserver : Début de l'exécution de serveur\n");
     serveur->open(serveur, "8000");
-    rt_printf("tserver : Connexion\n");
+    printf("tserver : Connexion\n");
 
     rt_mutex_acquire(&mutexEtat, TM_INFINITE);
     etatCommMoniteur = 0;
     rt_mutex_release(&mutexEtat);
 
     while (var1 > 0) {
-        rt_printf("tserver : Attente d'un message\n");
+        printf("tserver : Attente d'un message\n");
         var1 = serveur->receive(serveur, msg);
         num_msg++;
         if (var1 > 0) {
             switch (msg->get_type(msg)) {
                 case MESSAGE_TYPE_ACTION:
-                    rt_printf("tserver : Le message %d reçu est une action\n",
+                    printf("tserver : Le message %d reçu est une action\n",
                             num_msg);
                     DAction *action = d_new_action();
                     action->from_message(action, msg);
                     switch (action->get_order(action)) {
                         case ACTION_CONNECT_ROBOT:
-                            rt_printf("tserver : Action connecter robot\n");
+                            printf("tserver : Action connecter robot\n");
                             rt_sem_v(&semConnecterRobot);
                             break;
                         case ACTION_FIND_ARENA:
-                            rt_printf("tserver : Action find arena\n");
+                            printf("tserver : Action find arena\n");
                             rt_sem_v(&semArena);
                             break;
                         case ACTION_ARENA_IS_FOUND:
-                            rt_printf("tserver : Action arena is found\n");
+                            printf("tserver : Action arena is found\n");
 
                             // On remplace l'ancienne par la nouvelle.
                             rt_mutex_acquire(&mutexArena, TM_INFINITE);
@@ -233,17 +234,19 @@ void communiquer(void *arg) {
                             setFindingArena(0);
                             break;
                         case ACTION_ARENA_FAILED:
-                            rt_printf("tserver : Action arena failed\n");
+                            printf("tserver : Action arena failed\n");
                             setFindingArena(0);
+
                             break;
                         case ACTION_COMPUTE_CONTINUOUSLY_POSITION:
-                            rt_printf("tserver: Compute position\n");
+                            printf("tserver: Compute position\n");
                             setPosComputeEnabled(1);
                             break;
                     }
+
                     break;
                 case MESSAGE_TYPE_MOVEMENT:
-                    rt_printf("tserver : Le message reçu %d est un mouvement\n",
+                    printf("tserver : Le message reçu %d est un mouvement\n",
                             num_msg);
                     rt_mutex_acquire(&mutexMove, TM_INFINITE);
                     move->from_message(move, msg);
@@ -260,19 +263,19 @@ void deplacer(void *arg) {
     int gauche;
     int droite;
 
-    rt_printf("tmove : Debut de l'éxecution de periodique à 1s\n");
+    printf("tmove : Debut de l'éxecution de periodique à 1s\n");
     rt_task_set_periodic(NULL, TM_NOW, 200e+6);
 
     while (1) {
         /* Attente de l'activation périodique */
         rt_task_wait_period(NULL);
-        rt_printf("tmove : Activation périodique\n");
+        printf("tmove : Activation périodique\n");
 
         rt_mutex_acquire(&mutexEtat, TM_INFINITE);
         status = etatCommRobot;
         rt_mutex_release(&mutexEtat);
 
-        //rt_printf("tmove : status before = %d\n", status);
+        //printf("tmove : status before = %d\n", status);
         
         if (status == STATUS_OK) {
             rt_mutex_acquire(&mutexMove, TM_INFINITE);
@@ -315,7 +318,7 @@ int write_in_queue(RT_QUEUE *msgQueue, void * data, int size) {
     memcpy(msg, &data, size);
 
     if ((err = rt_queue_send(msgQueue, msg, sizeof (DMessage), Q_NORMAL)) < 0) {
-        rt_printf("Error msg queue send: %s\n", strerror(-err));
+        printf("Error msg queue send: %s\n", strerror(-err));
     }
     rt_queue_free(&queueMsgGUI, msg);
 

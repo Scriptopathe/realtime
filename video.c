@@ -43,6 +43,7 @@ void computeArena(void* arg)
         }
 
         // Compression
+
         jpeg->compress(jpeg, image);
 
         // Envoi au moniteur
@@ -52,6 +53,7 @@ void computeArena(void* arg)
             DMessage* message = d_new_message();
             message->put_jpeg_image(message, jpeg);
             if (write_in_queue(&queueMsgGUI, message, sizeof (DMessage)) < 0)
+
             {
                //message->free(message);
             }
