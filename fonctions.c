@@ -26,7 +26,7 @@ int check_status(int status)
         {
             printf("Connexion perdue... reconnexion...\n");
             etatCommRobot = status;
-            // rt_sem_v(&semConnecterRobot);
+            rt_sem_v(&semConnecterRobot);
         }
     }
     // Envoi du message au moniteur

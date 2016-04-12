@@ -65,10 +65,6 @@ void computeArena(void* arg)
 
 }
 
-void computePosition(void* arg)
-{
- 
-}
 
 /**
  * Tâche d'acquisition de l'image.
